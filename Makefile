@@ -1,25 +1,36 @@
-.PHONY: bootstrap clean distclean manage pep8 server
+.PHONY: bootstrap clean createdb devserver distclean manage pep8 server shell syncdb test
 
-PROJECT = 
+PROJECT = chitatel
+APPS = feeds users
 ENV ?= env
 VENV := $(shell echo $(VIRTUAL_ENV))
 
 ifneq ($(VENV),)
+	HONCHO = honcho
 	PEP8 = pep8
 	PYTHON = python
 else
+	HONCHO = source $(ENV)/bin/activate && honcho
 	PEP8 = $(ENV)/bin/pep8
 	PYTHON = $(ENV)/bin/python
 endif
 
 HOST ?= 0.0.0.0
 PORT ?= 8300
+TEST_ARGS ?=
 
 bootstrap:
 	bootstrapper -e $(ENV)
 
 clean:
 	find . -name "*.pyc" -delete
+
+createdb:
+	createuser -s -P chitatel
+	createdb -U chitatel chitatel
+
+devserver: pep8
+	PORT=$(PORT) $(HONCHO) start dev
 
 distclean: clean
 	rm -rf $(ENV)/ $(PROJECT)/settings_local.py
@@ -28,7 +39,17 @@ manage:
 	$(PYTHON) manage.py $(COMMAND)
 
 pep8:
-	pep8 --statistics $(PROJECT)/
+	pep8 --exclude=migrations --statistics $(PROJECT) $(APPS)
 
-server:
-	COMMAND="runserver_plus $(HOST):$(PORT)" $(MAKE) manage
+server: pep8
+	PORT=$(PORT) $(HONCHO) start web
+
+shell:
+	COMMAND=shell_plus $(MAKE) manage
+
+syncdb:
+	COMMAND="syncdb --noinput" $(MAKE) manage
+	COMMAND="migrate --noinput" $(MAKE) manage
+
+test: pep8
+	COMMAND="test $(TEST_ARGS) $(PROJECT) $(APPS)" $(MAKE) manage
