@@ -30,13 +30,30 @@ rel = lambda *parts: os.path.abspath(os.path.join(DIRNAME, *parts))
 logger = logging.getLogger('chitatel')
 
 
-def extra_combine(base, extra):
+def dict_combine(first, second, do_copy=True):
     """
-    Combine base and extra dicts which would be passed to extra log record
-    method.
+    Combine two dicts, but without affects to original dicts.
     """
-    copied = copy.deepcopy(base)
-    copied.update(extra)
+    copied = copy.deepcopy(first) if do_copy else first
+
+    for key, value in second.iteritems():
+        exists = key in copied
+
+        if exists and isinstance(copied[key], dict):
+            assert isinstance(value, dict)
+            copied[key] = dict_combine(copied[key], value)
+        elif exists and isinstance(copied[key], list):
+            assert isinstance(value, list)
+            copied[key] = copied[key] + value
+        elif exists and isinstance(copied[key], set):
+            assert isinstance(value, set)
+            copied[key] = copied[key] ^ value
+        elif exists and isinstance(copied[key], tuple):
+            assert isinstance(value, tuple)
+            copied[key] = copied[key] + value
+        else:
+            copied[key] = value
+
     return copied
 
 
@@ -61,22 +78,3 @@ def import_settings(settings, context, fail_silently=False):
         context[attr] = getattr(module, attr)
 
     return True
-
-
-def logging_combine(base, local):
-    """
-    Combine two logging config dictionaris.
-    """
-    copied = copy.deepcopy(base)
-
-    for key, value in local.iteritems():
-        if isinstance(copied[key], dict):
-            assert isinstance(value, dict)
-            copied[key] = logging_combine(copied[key], value)
-        elif isinstance(copied[key], list):
-            assert isinstance(value, list)
-            copied[key] = copied[key] + value
-        else:
-            copied[key] = value
-
-    return copied

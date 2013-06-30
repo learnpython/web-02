@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding model 'User'
-        db.create_table(u'users_user', (
+        db.create_table('chitatel_user', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('password', self.gf('django.db.models.fields.CharField')(max_length=128)),
             ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
@@ -25,7 +25,7 @@ class Migration(SchemaMigration):
         db.send_create_signal(u'users', ['User'])
 
         # Adding M2M table for field groups on 'User'
-        m2m_table_name = db.shorten_name(u'users_user_groups')
+        m2m_table_name = db.shorten_name('chitatel_user_groups')
         db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('user', models.ForeignKey(orm[u'users.user'], null=False)),
@@ -34,7 +34,7 @@ class Migration(SchemaMigration):
         db.create_unique(m2m_table_name, ['user_id', 'group_id'])
 
         # Adding M2M table for field user_permissions on 'User'
-        m2m_table_name = db.shorten_name(u'users_user_user_permissions')
+        m2m_table_name = db.shorten_name('chitatel_user_user_permissions')
         db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('user', models.ForeignKey(orm[u'users.user'], null=False)),
@@ -42,16 +42,40 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(m2m_table_name, ['user_id', 'permission_id'])
 
+        # Adding M2M table for field feeds on 'User'
+        m2m_table_name = db.shorten_name('chitatel_user_feeds')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('user', models.ForeignKey(orm[u'users.user'], null=False)),
+            ('feed', models.ForeignKey(orm[u'feeds.feed'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['user_id', 'feed_id'])
+
+        # Adding M2M table for field tags on 'User'
+        m2m_table_name = db.shorten_name('chitatel_user_tags')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('user', models.ForeignKey(orm[u'users.user'], null=False)),
+            ('tag', models.ForeignKey(orm[u'feeds.tag'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['user_id', 'tag_id'])
+
 
     def backwards(self, orm):
         # Deleting model 'User'
-        db.delete_table(u'users_user')
+        db.delete_table('chitatel_user')
 
         # Removing M2M table for field groups on 'User'
-        db.delete_table(db.shorten_name(u'users_user_groups'))
+        db.delete_table(db.shorten_name('chitatel_user_groups'))
 
         # Removing M2M table for field user_permissions on 'User'
-        db.delete_table(db.shorten_name(u'users_user_user_permissions'))
+        db.delete_table(db.shorten_name('chitatel_user_user_permissions'))
+
+        # Removing M2M table for field feeds on 'User'
+        db.delete_table(db.shorten_name('chitatel_user_feeds'))
+
+        # Removing M2M table for field tags on 'User'
+        db.delete_table(db.shorten_name('chitatel_user_tags'))
 
 
     models = {
@@ -75,10 +99,24 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'feeds.feed': {
+            'Meta': {'object_name': 'Feed', 'db_table': "'chitatel_feed'"},
+            'href': ('django.db.models.fields.URLField', [], {'unique': 'True', 'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'link': ('django.db.models.fields.URLField', [], {'max_length': '255', 'blank': 'True'}),
+            'summary': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'update_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'})
+        },
+        u'feeds.tag': {
+            'Meta': {'object_name': 'Tag', 'db_table': "'chitatel_tag'"},
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '32', 'primary_key': 'True'})
+        },
         u'users.user': {
-            'Meta': {'object_name': 'User'},
+            'Meta': {'object_name': 'User', 'db_table': "'chitatel_user'"},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
+            'feeds': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'users'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['feeds.Feed']"}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -88,6 +126,7 @@ class Migration(SchemaMigration):
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'tags': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'users'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['feeds.Tag']"}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         }

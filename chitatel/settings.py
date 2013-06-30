@@ -9,7 +9,7 @@ Settings for chitatel project.
 
 import sys
 
-from chitatel.utils import BOOL, ENV, import_settings, logging_combine, rel
+from chitatel.utils import BOOL, ENV, dict_combine, import_settings, rel
 
 
 # Debug settings
@@ -163,4 +163,4 @@ if SENTRY_DSN.startswith('https://'):
     LOGGING['loggers']['users']['handlers'].append('sentry')
 
 # Add local loging settings
-LOGGING = logging_combine(LOGGING, LOCAL_LOGGING)
+dict_combine(LOGGING, LOCAL_LOGGING, False)

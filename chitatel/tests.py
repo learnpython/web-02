@@ -12,7 +12,7 @@ import os
 from django.test import TestCase
 
 from . import settings
-from .utils import BOOL, ENV, extra_combine, import_settings, logging_combine
+from .utils import BOOL, ENV, import_settings
 
 
 class TestUtils(TestCase):
