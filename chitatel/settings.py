@@ -9,6 +9,9 @@ Settings for chitatel project.
 
 import sys
 
+import djcelery
+djcelery.setup_loader()
+
 from chitatel.utils import BOOL, ENV, dict_combine, import_settings, rel
 
 
@@ -19,13 +22,18 @@ TEMPLATE_DEBUG = DEBUG
 # Database settings
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'dbpool.db.backends.postgresql_psycopg2',
+        'OPTIONS': {'MAX_CONNS': 1, 'autocommit': True},
         'NAME': 'chitatel',
         'USER': 'chitatel',
         'PASSWORD': 'chitatel',
         'HOST': '127.0.0.1',
         'PORT': 5432,
     }
+}
+
+SOUTH_DATABASE_ADAPTERS = {
+    'default': 'south.db.postgresql_psycopg2',
 }
 
 # Date and time settings
@@ -46,6 +54,8 @@ INSTALLED_APPS = (
     # 3rd party applications
     'debug_toolbar',
     'django_extensions',
+    'djcelery',
+    'djkombu',
     'south',
 
     # Our applications
@@ -164,3 +174,6 @@ if SENTRY_DSN.startswith('https://'):
 
 # Add local loging settings
 dict_combine(LOGGING, LOCAL_LOGGING, False)
+
+# Celery settings
+BROKER_BACKEND = 'djkombu.transport.DatabaseTransport'
