@@ -29,6 +29,9 @@ createdb:
 	createuser -s -P chitatel
 	createdb -U chitatel chitatel
 
+deploy: test
+	git push heroku master
+
 devserver: pep8
 	PORT=$(PORT) $(HONCHO) start dev
 
