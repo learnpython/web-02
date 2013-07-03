@@ -1,4 +1,4 @@
-.PHONY: bootstrap clean createdb devserver distclean manage pep8 server shell syncdb test
+.PHONY: bootstrap clean createdb deploy devserver distclean dropdb manage pep8 server shell syncdb test
 
 PROJECT = chitatel
 APPS = feeds users
@@ -26,8 +26,9 @@ clean:
 	find . -name "*.pyc" -delete
 
 createdb:
-	createuser -s -P chitatel
-	createdb -U chitatel chitatel
+	psql -c '\du' | grep "^ $(PROJECT)" && : || createuser -s -P $(PROJECT)
+	psql -l | grep "^ $(PROJECT)" && : || createdb -U $(PROJECT) $(PROJECT)
+	$(MAKE) syncdb
 
 deploy: test
 	git push heroku master
@@ -37,6 +38,9 @@ devserver: pep8
 
 distclean: clean
 	rm -rf $(ENV)/ $(PROJECT)/settings_local.py
+
+dropdb:
+	dropdb -U $(PROJECT) $(PROJECT)
 
 manage:
 	$(PYTHON) manage.py $(COMMAND)

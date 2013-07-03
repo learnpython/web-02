@@ -118,6 +118,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 # Sentry settings
@@ -135,6 +136,7 @@ STATICFILES_FINDERS = (
 
 # Other settings
 ALLOWED_HOSTS = ['127.0.0.1']
+INTERNAL_IPS = ['127.0.0.1']
 ROOT_URLCONF = 'chitatel.urls'
 SECRET_KEY = 'please, set proper secret key in local settings'
 WSGI_APPLICATION = 'chitatel.wsgi.application'
@@ -149,6 +151,24 @@ import_settings('chitatel.settings_local', locals(), True)
 
 # Update installed apps
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_INSTALLED_APPS
+
+# Setup debug toolbar panels
+if DEBUG:
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.profiling.ProfilingDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
 
 # Update logging settings to use Sentry
 if SENTRY_DSN.startswith('https://'):
