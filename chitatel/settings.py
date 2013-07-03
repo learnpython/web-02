@@ -9,6 +9,8 @@ Settings for chitatel project.
 
 import sys
 
+import dj_database_url
+
 from chitatel.utils import BOOL, ENV, dict_combine, import_settings, rel
 
 
@@ -18,7 +20,7 @@ TEMPLATE_DEBUG = DEBUG
 
 # Database settings
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config() or {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'chitatel',
         'USER': 'chitatel',
