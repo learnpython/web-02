@@ -7,11 +7,11 @@ VENV := $(shell echo $(VIRTUAL_ENV))
 
 ifneq ($(VENV),)
 	HONCHO = honcho
-	PEP8 = pep8
+	PEP8 = flake8
 	PYTHON = python
 else
 	HONCHO = source $(ENV)/bin/activate && honcho
-	PEP8 = $(ENV)/bin/pep8
+	PEP8 = $(ENV)/bin/flake8
 	PYTHON = $(ENV)/bin/python
 endif
 
@@ -39,7 +39,7 @@ manage:
 	$(PYTHON) manage.py $(COMMAND)
 
 pep8:
-	pep8 --exclude=migrations --statistics $(PROJECT) $(APPS)
+	$(PEP8) --exclude=migrations --statistics $(PROJECT) $(APPS)
 
 server: pep8
 	PORT=$(PORT) $(HONCHO) start web

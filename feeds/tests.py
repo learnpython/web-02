@@ -11,7 +11,7 @@ import datetime
 
 from django.test import TestCase
 
-from .models import Entry, Feed, Tag
+from .models import Feed, Tag
 
 
 TEST_FEED_TITLE = 'Shutdown Corner'
