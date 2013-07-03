@@ -2,6 +2,9 @@
 Chitatel
 ========
 
+.. image:: https://travis-ci.org/learnpython/web-02.png?branch=master
+    :target: https://travis-ci.org/learnpython/web-02
+
 Google Reader clone built on top of Python 2.7 and Django 1.5.
 
 Requirements
