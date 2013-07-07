@@ -35,6 +35,12 @@ class Feed(models.Model):
         verbose_name = _('feed')
         verbose_name_plural = _('feeds')
 
+    def __unicode__(self):
+        """
+        Unicode representation.
+        """
+        return self.title
+
 
 class Entry(models.Model):
     """

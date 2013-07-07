@@ -17,8 +17,8 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',
-    url(r'^$', include('feeds.urls')),
-    url(r'^$', include('users.urls')),
+    url(r'^feeds/', include('feeds.urls')),
+    url(r'^users/', include('users.urls')),
 
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
