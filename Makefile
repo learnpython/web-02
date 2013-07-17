@@ -6,12 +6,16 @@ ENV ?= env
 VENV := $(shell echo $(VIRTUAL_ENV))
 
 ifneq ($(VENV),)
+	FABRIC = fab
 	HONCHO = honcho
 	PEP8 = flake8
+	PIP = pip
 	PYTHON = python
 else
+	FABRIC = $(ENV)/bin/fab
 	HONCHO = source $(ENV)/bin/activate && honcho
 	PEP8 = $(ENV)/bin/flake8
+	PIP = $(ENV)/bin/pip
 	PYTHON = $(ENV)/bin/python
 endif
 
@@ -30,8 +34,8 @@ createdb:
 	psql -l | grep "^ $(PROJECT)" && : || createdb -U $(PROJECT) $(PROJECT)
 	$(MAKE) syncdb
 
-deploy: test
-	git push heroku master
+deploy:
+	$(FABRIC) deploy
 
 devserver: pep8
 	PORT=$(PORT) $(HONCHO) start dev
@@ -41,6 +45,9 @@ distclean: clean
 
 dropdb:
 	dropdb -U $(PROJECT) $(PROJECT)
+
+list_updates:
+	$(PIP) list -lo
 
 manage:
 	$(PYTHON) manage.py $(COMMAND)
