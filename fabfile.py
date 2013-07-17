@@ -20,7 +20,7 @@ def commit():
     """
     Commit changed files if any.
     """
-    api.local('git add -p && git commit')
+    api.local('git add -i && git commit')
 
 
 def deploy(branch=None):
