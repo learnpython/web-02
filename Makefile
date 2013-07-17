@@ -35,7 +35,7 @@ createdb:
 	$(MAKE) syncdb
 
 deploy:
-	$(FABRIC) deploy
+	$(FABRIC) deploy -H $(HOST)
 
 devserver: pep8
 	PORT=$(PORT) $(HONCHO) start dev
