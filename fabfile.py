@@ -49,6 +49,9 @@ def init():
     api.run('[ ! -d "{0}" ] && git clone {1} "{0}" || :'.
             format(PROJECT_DIR, REPO))
 
+    with api.cd(PROJECT_DIR):
+        api.run('make createdb')
+
 
 def pre_deploy(branch=None):
     """
