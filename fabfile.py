@@ -6,7 +6,7 @@ from fabric import api
 DEFAULT_BRANCH = 'master'
 DEFAULT_SERVICE = 'nginx'
 REPO = 'git@github.com:learnpython/web-02.git'
-PROJECT_DIR = '/srv/projects/learnpython/web-02'
+PROJECT_DIR = '/Users/playpauseandstop/Projects/learnpython-web-02'
 
 
 def bootstrap():
@@ -22,7 +22,8 @@ def commit():
     """
     Commit changed files if any.
     """
-    api.local('git add -i && git commit')
+    with api.settings(warn_only=True):
+        api.local('git add -i && git commit')
 
 
 def deploy(branch=None):

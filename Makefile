@@ -32,7 +32,6 @@ clean:
 createdb:
 	psql -c '\du' | grep "^ $(PROJECT)" && : || createuser -s -P $(PROJECT)
 	psql -l | grep "^ $(PROJECT)" && : || createdb -U $(PROJECT) $(PROJECT)
-	$(MAKE) syncdb
 
 deploy:
 	$(FABRIC) deploy -H $(HOST)
