@@ -9,6 +9,7 @@ Unit tests for feeds application.
 
 import datetime
 
+from django.db import DatabaseError
 from django.test import TestCase
 
 from .models import Feed, Tag
@@ -53,4 +54,4 @@ class TestModels(TestCase):
     def test_tag(self):
         Tag.objects.create(name='tag')
         Tag.objects.create(name='Tag')
-        self.assertRaises(Tag.objects.create, name='tag')
+        self.assertRaises(DatabaseError, Tag.objects.create, name='tag')
